@@ -101,3 +101,5 @@ Install with:
 
 ```bash
 pip install opencv-python deepface numpy pyserial
+```
+
