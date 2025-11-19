@@ -35,7 +35,7 @@ The **Security-Lock** system uses a webcam and a stored facial embedding to dete
 
 1. Python opens webcam → captures frames  
 2. DeepFace (ArcFace) extracts a face embedding  
-3. Compares embedding to the stored authorized embedding  
+3. The embedding is compared with the stored authorized embedding  
 4. Cosine similarity determines:
    - ✔️ **APPROVED** — face matches  
    - ❌ **DENIED** — face detected but not authorized  
@@ -50,8 +50,8 @@ The **Security-Lock** system uses a webcam and a stored facial embedding to dete
 ### **Python (PC Side)**
 
 - Captures webcam frames  
-- Performs face detection + embedding via DeepFace  
-- Loads stored embedding from `face_db.json`  
+- Performs face detection + embedding  
+- Loads authorized embedding from `face_db.json`  
 - Computes cosine similarity  
 - Sends messages to Arduino:
   - `"SEARCH"`
@@ -63,9 +63,10 @@ The **Security-Lock** system uses a webcam and a stored facial embedding to dete
 
 ### **Arduino (Microcontroller Side)**
 
-- Listens to serial messages  
-- Controls **one LED** with different blink patterns  
-- (Optional) Can control relay, sensors, locks  
+- Listens for serial commands  
+- Controls **one LED**  
+- Uses blink patterns to display system status  
+- (Optional) Supports relay/sensor modules  
 
 ---
 
@@ -74,11 +75,11 @@ The **Security-Lock** system uses a webcam and a stored facial embedding to dete
 - Arduino Mega 2560  
 - Breadboard  
 - **One red LED**  
-- Resistor (220Ω–1kΩ)  
+- 220Ω–1kΩ resistor  
 - Jumper wires  
 - USB cable  
 - Webcam  
-- (Optional) Relay module, HC-SR04  
+- (Optional) relay module, HC-SR04 ultrasonic sensor  
 
 ---
 
@@ -104,8 +105,8 @@ Built-in modules used:
 ### **Arduino Requirements**
 
 - Arduino IDE  
-- Board set to **Arduino Mega 2560**  
-- Serial Monitor **must be closed** when Python runs  
+- Select **Arduino Mega 2560** board  
+- Serial Monitor **must be closed** while Python is running  
 
 ---
 
@@ -116,16 +117,16 @@ Security-Lock/
 │
 ├── README.md
 ├── trappem.py                # Main Python script
-├── face_access_control.py    # Early version (optional)
+├── face_access_control.py    # Older version (optional)
 │
 ├── enroll/
-│   └── face_db.json          # Stored face embedding
+│   └── face_db.json          # Authorized user’s embedding
 │
 ├── arduino/
-│   └── security_lock.ino     # LED/lock Arduino code
+│   └── security_lock.ino     # Arduino LED controller
 │
-├── images/                   # Wiring pictures (optional)
-└── videos/                   # Links documented in README
+├── images/                   # Wiring images (optional)
+└── videos/                   # Video links (in README)
 ```
 
 ---
@@ -148,33 +149,33 @@ pip install opencv-python deepface numpy pyserial
 
 1. Open `arduino/security_lock.ino`  
 2. Select **Arduino Mega 2560**  
-3. Upload  
-4. CLOSE Serial Monitor  
+3. Upload the sketch  
+4. **Close Serial Monitor**  
 
 ### **4. Connect LED**
 
-- Long leg → pin **13**  
-- Short leg → resistor → **GND**  
+- **Long leg → pin 13**  
+- **Short leg → resistor → GND**  
 
 ---
 
 ## ▶️ How to Run
 
-1. Plug in Arduino via USB  
-2. Make sure **Serial Monitor is closed**  
-3. Run:
+1. Connect Arduino via USB  
+2. Make sure Serial Monitor is CLOSED  
+3. Run Python script:
 
 ```bash
 python trappem.py
 ```
 
 4. Show your face to the camera  
-5. LED reacts:
+5. LED indicates the result:
 
-- APPROVED → solid  
-- DENIED → fast blink  
-- SEARCH → slow blink  
-- NOFACE → off  
+- APPROVED → **solid ON**  
+- DENIED → **fast blink**  
+- SEARCH → **slow blink**  
+- NOFACE → **off**  
 
 ---
 
@@ -191,38 +192,37 @@ python trappem.py
 
 ## 🎥 Process / Documentation Videos
 
-### ✔️ **Video 1 — Full System Demo**
-
+### ✔️ Video 1 — Full System Demo  
 https://youtube.com/shorts/qk67F_gxURk?si=Ss1e98_KVKMWUg7C
 
-(Add more videos here if you upload them later.)
+(Add more videos here if needed.)
 
 ---
 
 ## ⚠️ Known Issues / Limitations
 
-- DeepFace can be slow on weak computers  
-- Lighting heavily affects detection accuracy  
-- Only one authorized user supported right now  
-- Wrong COM port breaks serial communication  
-- Fast movement may trigger “NOFACE”  
+- DeepFace may run slowly on lower-end CPUs  
+- Lighting affects accuracy  
+- Only one authorized user supported  
+- Wrong COM port breaks communication  
+- Fast movement can trigger `"NOFACE"`  
 
 ---
 
 ## 🚀 Future Improvements
 
-- Add OLED display  
-- Add relay to control real lock hardware  
-- Support multiple users  
-- Add fingerprint/backup authentication  
+- Add OLED screen  
+- Add relay-controlled door lock  
+- Add multi-user support  
+- Add backup fingerprint authentication  
 - Convert to Raspberry Pi standalone  
-- Encrypt embedding storage  
+- Encrypt stored embeddings  
 
 ---
 
 ## 🙌 Credits
 
 - **Clinton Ita** — Developer  
-- DeepFace (ArcFace)  
+- DeepFace (ArcFace model)  
 - OpenCV  
 - Arduino Mega 2560  
